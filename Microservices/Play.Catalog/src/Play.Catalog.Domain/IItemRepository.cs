@@ -16,5 +16,11 @@ namespace Play.Catalog.Domain
         /// </summary>
         /// <returns></returns>
         Task<IReadOnlyCollection<Item>> GetAllAsync();
+       /// <summary>
+       /// Create an item
+       /// </summary>
+       /// <param name="item">Item object</param>
+       /// <returns></returns>
+        Task CreateAsync(Item item);
     }
 }

@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Play.Catalog.Aplication.Features.Items.Commands.CreateItem;
 using Play.Catalog.Aplication.Features.Items.Queries.GetItemById;
 using Play.Catalog.Aplication.Features.Items.Queries.GetItemsList;
 using Play.Catalog.Service.Dtos;
@@ -31,19 +32,16 @@ namespace Play.Catalog.Service.Controllers
             return Ok(item);
         }
 
-        //[HttpPost]
-        //public ActionResult<ItemDto> Post(CreateItemDto createItemDto)
-        //{
-        //    var item = new ItemDto(Guid.NewGuid(),
-        //                        createItemDto.Name,
-        //                        createItemDto.Description,
-        //                        createItemDto.Price,
-        //                        DateTimeOffset.UtcNow);
+        [HttpPost]
+        public async Task<ActionResult<ItemDto>> Post(CreateItemDto createItemDto)
+        {
+            var item = await _mediator.Send(new CreateItemCommand(
+                createItemDto.Name,
+                createItemDto.Description,
+                createItemDto.Price));
 
-        //    items.Add(item);
-
-        //    return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
-        //}
+            return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
+        }
 
         //[HttpPut("{id}")]
         //public ActionResult Put(Guid id, UpdateItemDto updateItemDto)

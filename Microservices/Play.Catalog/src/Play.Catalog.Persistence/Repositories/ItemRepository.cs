@@ -18,6 +18,12 @@ namespace Play.Catalog.Persistence.Repositories
             _dbCollection = database.GetCollection<Item>(_collectionName);
         }
 
+        public async Task CreateAsync(Item item)
+        {
+            if (item is null) throw new ArgumentNullException(nameof(item));
+            await _dbCollection.InsertOneAsync(item);
+        }
+
         public async Task<IReadOnlyCollection<Item>> GetAllAsync()
         {
             IReadOnlyCollection<Item> items = await _dbCollection.Find(_filterBuilder.Empty).ToListAsync();

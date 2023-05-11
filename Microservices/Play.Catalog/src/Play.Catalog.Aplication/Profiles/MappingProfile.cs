@@ -10,7 +10,7 @@ namespace Play.Catalog.Aplication.Profiles
     {
 		public MappingProfile()
 		{
-			CreateMap<Item, ItemDto>();
+			CreateMap<Item, ItemDto>().ReverseMap();
         }
 	}
 }

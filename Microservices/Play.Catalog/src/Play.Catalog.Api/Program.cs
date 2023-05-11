@@ -1,5 +1,4 @@
-using Play.Catalog.Aplication;
-using Play.Catalog.Persistence;
+using Play.Catalog.Api.Modules;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddApplicationServices();
- 
+builder.Services.AddFeaturesServices();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
