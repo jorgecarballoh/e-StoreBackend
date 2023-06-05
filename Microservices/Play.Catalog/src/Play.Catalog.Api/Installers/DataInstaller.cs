@@ -1,8 +1,6 @@
-﻿using MediatR;
-using Play.Catalog.Aplication.Features.Items.Dtos;
-using Play.Catalog.Aplication.Features.Items.Queries.GetItemById;
-using Play.Catalog.Aplication.Features.Items.Queries.GetItemsList;
-using Play.Catalog.Persistence.Repositories;
+﻿
+using Play.Catalog.Api.Domain.Items;
+using Play.Common.MongoDB;
 
 namespace Play.Catalog.Api.Installers
 {
@@ -10,9 +8,7 @@ namespace Play.Catalog.Api.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<ItemRepository>();
-            services.AddTransient<IRequestHandler<GetItemsListQuery, IEnumerable<ItemDto>>, GetItemsListQueryHandler>();
-            services.AddTransient<IRequestHandler<GetItemByIdQuery, ItemDto>, GetItemByIdQueryHandler>();
+            services.AddAMongo().AddMongoRepository<Item>("items");
         }
     }
 }

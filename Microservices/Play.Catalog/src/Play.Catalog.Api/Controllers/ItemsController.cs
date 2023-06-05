@@ -1,88 +1,77 @@
-using MediatR;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Play.Catalog.Aplication.Features.Items.Commands.CreateItem;
-using Play.Catalog.Aplication.Features.Items.Queries.GetItemById;
-using Play.Catalog.Aplication.Features.Items.Queries.GetItemsList;
-using Play.Catalog.Service.Dtos;
+using Play.Catalog.Api.Domain.Items;
+using Play.Catalog.Api.Dtos;
+using Play.Common;
 
 namespace Play.Catalog.Service.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class ItemsController : ControllerBase
     {
-        private readonly IMediator _mediator;
-     
-        public ItemsController(IMediator mediator)
+        private readonly IRepository<Item> _itemRepository;
+        private readonly IMapper _mapper;
+
+        public ItemsController(IRepository<Item> itemRepository, IMapper mapper)
         {
-            _mediator = mediator;
+            _itemRepository = itemRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ItemDto>>> Get()
+        public async Task<ActionResult<IEnumerable<ItemDto>>> GetAsync()
         {
-            var listOfItems = await _mediator.Send(new GetItemsListQuery());
-            return Ok(listOfItems);
+            var allItems = await _itemRepository.GetAllAsync();
+            var dto = _mapper.Map<IEnumerable<ItemDto>>(allItems);
+            return Ok(dto);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ItemDto>> GetById(Guid id)
+        public async Task<ActionResult<ItemDto>> GetByIdAsync(Guid id)
         {
-            var item = await _mediator.Send(new GetItemByIdQuery(id));
-            return Ok(item);
+            var item = await _itemRepository.GetAsync(id);
+
+            if (item is null) return NotFound();
+
+            var dto = _mapper.Map<ItemDto>(item);
+
+            return Ok(dto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ItemDto>> Post(CreateItemDto createItemDto)
+        public async Task<ActionResult<ItemDto>> PostAsync(CreateItemDto createItemDto)
         {
-            var item = await _mediator.Send(new CreateItemCommand(
-                createItemDto.Name,
-                createItemDto.Description,
-                createItemDto.Price));
+            var item = _mapper.Map<Item>(createItemDto);
+            await _itemRepository.CreateAsync(item);
 
-            return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = item.Id}, item);
         }
 
-        //[HttpPut("{id}")]
-        //public ActionResult Put(Guid id, UpdateItemDto updateItemDto)
-        //{
-        //    var existingItem = items.Where(item => item.Id == id).SingleOrDefault();
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutAsync(Guid id, UpdateItemDto updateItemDto)
+        {
+            var existingItem = await _itemRepository.GetAsync(id);
 
-        //    if (existingItem is null)
-        //    {
-        //        ItemDto item = new ItemDto(id,
-        //                                   updateItemDto.Name,
-        //                                   updateItemDto.Description,
-        //                                   updateItemDto.Price,
-        //                                   DateTimeOffset.UtcNow);
+            if (existingItem is  null) return NotFound();
 
-        //        items.Add(item);
-        //        return CreatedAtAction(nameof(GetById), new { id }, item);
-        //    }
+            var itemUpdated = _mapper.Map(updateItemDto, existingItem);
 
-        //    var updatedItem = existingItem with
-        //    {
-        //        Name = updateItemDto.Name,
-        //        Description = updateItemDto.Description,
-        //        Price = updateItemDto.Price
-        //    };
+            await _itemRepository.UpdateAsync(itemUpdated);
 
-        //    var index = items.FindIndex(item => item.Id == id);
-        //    items[index] = updatedItem;
+            return NoContent();
+        }
 
-        //    return NoContent();
-        //}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            var existingItem = await _itemRepository.GetAsync(id);
 
-        //[HttpDelete("{id}")]
-        //public ActionResult Delete(Guid id)
-        //{
-        //    var index = items.FindIndex(item => item.Id == id);
+            if (existingItem is null) return NotFound();
 
-        //    if (index < 0) return NotFound();
-
-        //    items.RemoveAt(index);
-
-        //    return NoContent();
-        //}
+            await _itemRepository.RemoveAsync(id);
+             
+            return NoContent();
+        }
     }
 }

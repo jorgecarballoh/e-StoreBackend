@@ -8,13 +8,16 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-        <PackageReference Include="MediatR" Version="12.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="MongoDB.Driver" Version="2.19.2" />
+        <PackageReference Include="AutoMapper" Version="12.0.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="Play.Common" Version="1.0.0" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Play.Catalog.Aplication\Play.Catalog.Aplication.csproj">
-        <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-      </ProjectReference>
+      <None Remove="Domain\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Domain\" />
     </ItemGroup>
 </Project>

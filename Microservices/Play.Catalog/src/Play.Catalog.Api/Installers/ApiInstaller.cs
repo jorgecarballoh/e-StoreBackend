@@ -5,7 +5,9 @@ namespace Play.Catalog.Api.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddControllers();
+            services.AddControllers(option => {
+                option.SuppressAsyncSuffixInActionNames = false;
+            });
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
